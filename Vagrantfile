@@ -99,4 +99,32 @@ Vagrant.configure("2") do |config|
     		}
 		end
 	end
+
+
+	config.vm.define :client1 do |client1_config|
+		client1_config.vm.box = "centos6-aws-us-east"
+		client1_config.vm.hostname = "client1"
+
+		client1_config.vm.provider :aws do |aws, override|
+			aws_config = YAML::load_file(File.join(Dir.home, ".aws_secrets"))
+			aws.access_key_id = aws_config.fetch("access_key_id")
+			aws.secret_access_key = aws_config.fetch("secret_access_key")
+			aws.keypair_name = aws_config.fetch("keypair_name")
+			override.ssh.username = "root"			
+			override.ssh.private_key_path = aws_config.fetch("keypair_path")
+			name = aws_config.fetch("instance_name_prefix") + " PXC test client"
+
+			aws.tags = {
+				'Name' => name
+			}
+			aws.instance_type="c1.xlarge"
+		end
+
+		client1_config.vm.provision :puppet do |puppet|
+			puppet.manifests_path = "vagrant/puppet/manifests"
+			puppet.manifest_file  = "client.pp"
+			puppet.module_path = "vagrant/puppet/modules"
+			puppet.options = "--verbose"
+		end
+	end
 end
