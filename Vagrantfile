@@ -2,6 +2,13 @@
 # vi: set ft=ruby :
 require 'yaml'
 
+pxc_config = {
+	"innodb_buffer_pool_size" => "10G",
+	"innodb_log_file_size" => "1G",
+	"wsrep_provider_options" => "gcache.size=2G; gcs.fc_limit=2048",
+	"wsrep_slave_threads" => 16
+}
+
 Vagrant.configure("2") do |config|
 
 	config.vm.define :node1 do |node1_config|
@@ -29,10 +36,7 @@ Vagrant.configure("2") do |config|
 			puppet.manifest_file  = "pxc.pp"
 			puppet.module_path = "vagrant/puppet/modules"
 			puppet.options = "--verbose"
-		    puppet.facter = {
-			    "innodb_buffer_pool_size" => "10G",
-			    "innodb_log_file_size" => "1G"
-    		}
+		    puppet.facter = pxc_config
 		end
 	end
 
@@ -61,10 +65,7 @@ Vagrant.configure("2") do |config|
 			puppet.manifest_file  = "pxc.pp"
 			puppet.module_path = "vagrant/puppet/modules"
 			puppet.options = "--verbose"
-			puppet.facter = {
-			    "innodb_buffer_pool_size" => "10G",
-			    "innodb_log_file_size" => "1G"
-    		}
+			puppet.facter = pxc_config
 		end
 	end
 
@@ -93,10 +94,7 @@ Vagrant.configure("2") do |config|
 			puppet.manifest_file  = "pxc.pp"
 			puppet.module_path = "vagrant/puppet/modules"
 			puppet.options = "--verbose"
-        	puppet.facter = {
-			    "innodb_buffer_pool_size" => "10G",
-			    "innodb_log_file_size" => "1G"
-    		}
+        	puppet.facter = pxc_config
 		end
 	end
 
