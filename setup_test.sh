@@ -19,31 +19,39 @@ vagrant ssh node1 -c "mysql -e \"grant all on test.* to test@'$client1_ip'\""
 
 mysql_connect="mysql -h $node1_ip -u test test"
 
-# Load schema and data
-vagrant ssh client1 -c "$mysql_connect < tpcc-mysql/create_table.sql"
+# # Load schema and data
+# vagrant ssh client1 -c "$mysql_connect < tpcc-mysql/create_table.sql"
 
-node_array=( $node1_ip $node2_ip $node3_ip )
-node_counter=0
+# # node_array=( $node1_ip $node2_ip $node3_ip )
+# # node_counter=0
 
-max_wh=20
-big_command="cd tpcc-mysql; "
-for wh in $(seq 1 $max_wh)
-do
-	echo -n "WH: $wh "
-	for part in $(seq 1 4)
-	do
+# max_wh=20
+# # big_command="cd tpcc-mysql; "
+# # for wh in $(seq 1 $max_wh)
+# # do
+# # 	echo -n "WH: $wh "
 
-		this_node=${node_array[$node_counter]}
-		node_counter=$((node_counter+1))
-		if [ $node_counter -gt 2 ]; then
-			node_counter=0
-		fi
+# # 	this_node=${node_array[$node_counter]}
+# # 	node_counter=$((node_counter+1))
+# # 	if [ $node_counter -gt 2 ]; then
+# # 		node_counter=0
+# # 	fi
 
-		echo -n "$part ($this_node) "
-		big_command="$big_command ./tpcc_load $this_node test test '' $max_wh $part $wh $wh &"
-	done
-	echo
+# # 	for part in $(seq 1 4)
+# # 	do
+# # 		echo -n "$part ($this_node) "
+# # 		big_command="$big_command ./tpcc_load $this_node test test '' $max_wh $part $wh $wh &"
+# # 	done
+# # 	echo
 
-done
+# # done
 
-vagrant ssh client1 -c "$big_command"
+# # vagrant ssh client1 -c "$big_command"
+
+# for part in $(seq 1 4)
+# do
+# 	echo "Doing part $part"
+# 	vagrant ssh client1 -c "cd tpcc-mysql; ./tpcc_load $node1_ip test test '' $max_wh $part 1 6 &"
+# 	vagrant ssh client1 -c "cd tpcc-mysql; ./tpcc_load $node2_ip test test '' $max_wh $part 7 13 &"
+# 	vagrant ssh client1 -c "cd tpcc-mysql; ./tpcc_load $node3_ip test test '' $max_wh $part 14 20"
+# done
