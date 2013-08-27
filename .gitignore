@@ -2,3 +2,6 @@
 packer/packer__aws.box
 packer/packer_amazon-ebs_aws.box
 results/*
+.Rproj.user
+.RData
+.Rhistory
