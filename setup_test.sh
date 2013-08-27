@@ -6,10 +6,10 @@ echo "Client1's ip: $client1_ip";
 
 node1_ip=`vagrant ssh node1 -c "ip a l | grep eth0 | grep inet | awk '{print \\$2}' | awk -F/ '{print \\$1}'"`
 echo "Node1's ip: $node1_ip";
-node2_ip=`vagrant ssh node2 -c "ip a l | grep eth0 | grep inet | awk '{print \\$2}' | awk -F/ '{print \\$1}'"`
-echo "Node2's ip: $node2_ip";
-node3_ip=`vagrant ssh node3 -c "ip a l | grep eth0 | grep inet | awk '{print \\$2}' | awk -F/ '{print \\$1}'"`
-echo "Node3's ip: $node3_ip";
+# node2_ip=`vagrant ssh node2 -c "ip a l | grep eth0 | grep inet | awk '{print \\$2}' | awk -F/ '{print \\$1}'"`
+# echo "Node2's ip: $node2_ip";
+# node3_ip=`vagrant ssh node3 -c "ip a l | grep eth0 | grep inet | awk '{print \\$2}' | awk -F/ '{print \\$1}'"`
+# echo "Node3's ip: $node3_ip";
 
 
 
