@@ -33,4 +33,4 @@ vagrant ssh client1 -c "$RUN_TEST --mysql-host=$node1_ip" -- > results/standalon
 
 vagrant ssh node1 -c "mv /etc/my.cnf.bak /etc/my.cnf"
 vagrant ssh node1 -c "service mysql stop"
-vagarnt ssh node1 -c "service mysql bootstrap-pxc"
+vagrant ssh node1 -c "service mysql bootstrap-pxc"
