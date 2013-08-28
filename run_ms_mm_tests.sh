@@ -22,7 +22,7 @@ vagrant ssh client1 -c "$RUN_TEST --mysql-host=$node1_ip" -- > results/ms_innodb
 
 sleep 120
 
-echo "Multi Writer Innodb Test"
-vagrant ssh client1 -c "$RUN_TEST --mysql-host=$node1_ip" -- > results/mm_innodb_1.txt &
-vagrant ssh client1 -c "$RUN_TEST --mysql-host=$node2_ip" -- > results/mm_innodb_2.txt &
-vagrant ssh client1 -c "$RUN_TEST --mysql-host=$node3_ip" -- > results/mm_innodb_3.txt
+echo "Multi Writer Innodb Test (21 threads each)"
+vagrant ssh client1 -c "$RUN_TEST --num-threads=21 --mysql-host=$node1_ip" -- > results/mm_innodb_1.txt &
+vagrant ssh client1 -c "$RUN_TEST --num-threads=21 --mysql-host=$node2_ip" -- > results/mm_innodb_2.txt &
+vagrant ssh client1 -c "$RUN_TEST --num-threads=21 --mysql-host=$node3_ip" -- > results/mm_innodb_3.txt
