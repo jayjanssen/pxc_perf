@@ -5,3 +5,4 @@ results/*
 .Rproj.user
 .RData
 .Rhistory
+*.data
