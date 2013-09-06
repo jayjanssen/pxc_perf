@@ -1,128 +1,93 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-require 'yaml'
+require './vagrant/lib/vagrant-common.rb'
 
+# Our definitions
 pxc_config = {
+	'datadir_dev' => 'xvdl',
 	"innodb_buffer_pool_size" => "10G",
 	"innodb_log_file_size" => "1G",
 	"wsrep_provider_options" => "gcache.size=2G; gcs.fc_limit=2048",
-	"wsrep_slave_threads" => 16
+	"wsrep_slave_threads" => 16,
+	"wsrep_auto_increment_control" => "OFF"
 }
 
+pxc_instance_type = "m3.xlarge"
+
+pxc_block_device = [
+    {
+        'DeviceName' => "/dev/sdl",
+        'VirtualName' => "mysql_data",
+        'Ebs.VolumeSize' => 100,
+        'Ebs.DeleteOnTermination' => true,
+        'Ebs.VolumeType' => 'io1',
+        'Ebs.Iops' => 1000
+    }
+]
+
 Vagrant.configure("2") do |config|
+	config.vm.box = "centos-6_4-64_percona"
+	config.ssh.username = "root"
 
 	config.vm.define :node1 do |node1_config|
-		node1_config.vm.box = "centos6-aws-us-east"
+		# Every Vagrant virtual environment requires a box to build off of.
 		node1_config.vm.hostname = "node1"
+        node1_config.vm.network :private_network, ip: "192.168.70.2"
 
 		node1_config.vm.provider :aws do |aws, override|
-			aws_config = YAML::load_file(File.join(Dir.home, ".aws_secrets"))
-			aws.access_key_id = aws_config.fetch("access_key_id")
-			aws.secret_access_key = aws_config.fetch("secret_access_key")
-			aws.keypair_name = aws_config.fetch("keypair_name")
-			# override.ssh.username = "ubuntu"
-			override.ssh.username = "root"			
-			override.ssh.private_key_path = aws_config.fetch("keypair_path")
-			name = aws_config.fetch("instance_name_prefix") + " Vagrant Node1 PXC"
+			aws_provider( aws, override, "Vagrant Node1 PXC Perf Test" )
 
-			aws.tags = {
-				'Name' => name
-			}
-			aws.instance_type="m3.xlarge"
-		end
+			# The instance_type and EBS device name seem intertwined
+			aws.instance_type = pxc_instance_type
+			puppet( override, 'pxc.pp', pxc_config )
 
-	  node1_config.vm.provision :puppet do |puppet|
-			puppet.manifests_path = "vagrant/puppet/manifests"
-			puppet.manifest_file  = "pxc.pp"
-			puppet.module_path = "vagrant/puppet/modules"
-			puppet.options = "--verbose"
-		    puppet.facter = pxc_config
+			aws.block_device_mapping = pxc_block_device
 		end
 	end
 
 	config.vm.define :node2 do |node2_config|
-		# node2_config.vm.box = "ubuntu-aws-us-east"
-		node2_config.vm.box = "centos6-aws-us-east"
+		# Every Vagrant virtual environment requires a box to build off of.
 		node2_config.vm.hostname = "node2"
+        node2_config.vm.network :private_network, ip: "192.168.70.3"
 
 		node2_config.vm.provider :aws do |aws, override|
-			aws_config = YAML::load_file(File.join(Dir.home, ".aws_secrets"))
-			aws.access_key_id = aws_config.fetch("access_key_id")
-			aws.secret_access_key = aws_config.fetch("secret_access_key")
-			aws.keypair_name = aws_config.fetch("keypair_name")
-			# override.ssh.username = "ubuntu"
-			override.ssh.username = "root"
-			override.ssh.private_key_path = aws_config.fetch("keypair_path")
-			name = aws_config.fetch("instance_name_prefix") + " Vagrant Node2 PXC"
-			aws.tags = {
-				'Name' => name
-			}
-         	aws.instance_type="m3.xlarge"
-		end
+			aws_provider( aws, override, "Vagrant Node2 PXC Perf Test" )
 
-	  node2_config.vm.provision :puppet do |puppet|
-			puppet.manifests_path = "vagrant/puppet/manifests"
-			puppet.manifest_file  = "pxc.pp"
-			puppet.module_path = "vagrant/puppet/modules"
-			puppet.options = "--verbose"
-			puppet.facter = pxc_config
+			# The instance_type and EBS device name seem intertwined
+			aws.instance_type = pxc_instance_type
+			puppet( override, 'pxc.pp', pxc_config )
+
+			aws.block_device_mapping = pxc_block_device
 		end
 	end
 
 	config.vm.define :node3 do |node3_config|
-		# node3_config.vm.box = "ubuntu-aws-us-east"
-		node3_config.vm.box = "centos6-aws-us-east"
+		# Every Vagrant virtual environment requires a box to build off of.
 		node3_config.vm.hostname = "node3"
+        node3_config.vm.network :private_network, ip: "192.168.70.4"
 
 		node3_config.vm.provider :aws do |aws, override|
-			aws_config = YAML::load_file(File.join(Dir.home, ".aws_secrets"))
-			aws.access_key_id = aws_config.fetch("access_key_id")
-			aws.secret_access_key = aws_config.fetch("secret_access_key")
-			aws.keypair_name = aws_config.fetch("keypair_name")
-			# override.ssh.username = "ubuntu"
-			override.ssh.username = "root"
-			override.ssh.private_key_path = aws_config.fetch("keypair_path")
-			name = aws_config.fetch("instance_name_prefix") + " Vagrant Node3 PXC"
-			aws.tags = {
-				'Name' => name
-			}
-         	aws.instance_type="m3.xlarge"
-		end
+			aws_provider( aws, override, "Vagrant Node3 PXC Perf Test" )
 
-	  node3_config.vm.provision :puppet do |puppet|
-			puppet.manifests_path = "vagrant/puppet/manifests"
-			puppet.manifest_file  = "pxc.pp"
-			puppet.module_path = "vagrant/puppet/modules"
-			puppet.options = "--verbose"
-        	puppet.facter = pxc_config
+			# The instance_type and EBS device name seem intertwined
+			aws.instance_type = pxc_instance_type
+			puppet( override, 'pxc.pp', pxc_config )
+
+			aws.block_device_mapping = pxc_block_device
 		end
 	end
 
 
 	config.vm.define :client1 do |client1_config|
-		client1_config.vm.box = "centos6-aws-us-east"
 		client1_config.vm.hostname = "client1"
+        client1_config.vm.network :private_network, ip: "192.168.70.4"
 
 		client1_config.vm.provider :aws do |aws, override|
-			aws_config = YAML::load_file(File.join(Dir.home, ".aws_secrets"))
-			aws.access_key_id = aws_config.fetch("access_key_id")
-			aws.secret_access_key = aws_config.fetch("secret_access_key")
-			aws.keypair_name = aws_config.fetch("keypair_name")
-			override.ssh.username = "root"			
-			override.ssh.private_key_path = aws_config.fetch("keypair_path")
-			name = aws_config.fetch("instance_name_prefix") + " PXC test client"
-
-			aws.tags = {
-				'Name' => name
-			}
+			aws_provider( aws, override, "Vagrant PXC test client")
 			aws.instance_type="c1.xlarge"
-		end
 
-		client1_config.vm.provision :puppet do |puppet|
-			puppet.manifests_path = "vagrant/puppet/manifests"
-			puppet.manifest_file  = "client.pp"
-			puppet.module_path = "vagrant/puppet/modules"
-			puppet.options = "--verbose"
+			puppet( override, 'client.pp' )
 		end
 	end
 end
+
